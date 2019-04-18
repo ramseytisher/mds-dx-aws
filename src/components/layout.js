@@ -22,7 +22,7 @@ const Layout = ({ children }) => (
         <Box>
           <Box pad="small" background="dark-1">
             <Heading>{data.site.siteMetadata.title}</Heading>
-            <Heading level={3}>{data.site.siteMetadata.description}<span>🤔</span></Heading>
+            <Heading level={3}>{data.site.siteMetadata.description}</Heading>
           </Box>
         </Box>
         <Box pad="medium">
