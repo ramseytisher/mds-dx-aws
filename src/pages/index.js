@@ -11,7 +11,11 @@ const IndexPage = ({ data }) => {
 
   const handleSearch = (search) => {
     const filteredResults = _.filter(data.allPdpmMapCsv.edges, ({ node }) => {
-      const str = node.Description.toString().toUpperCase() + node.ICD_10_CM_Code.toString().toUpperCase() + node.Default_Clinical_Category.toString().toUpperCase() + node.NTA_Comorbidity.toString().toUpperCase();
+      const str = node.Description.toString().toUpperCase() + 
+      node.ICD_10_CM_Code.toString().toUpperCase() + 
+      node.Default_Clinical_Category.toString().toUpperCase() + 
+      node.NTA_Comorbidity.toString().toUpperCase() +
+      node.SLP_Comorbidity.toString().toUpperCase();
       return str.includes(search.toUpperCase());
     })
     setFiltered(filteredResults);
