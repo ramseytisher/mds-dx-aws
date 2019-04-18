@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Link, graphql } from "gatsby"
+import { graphql } from "gatsby"
 import { Box, Form, FormField, Button, Heading, DataTable, Text } from 'grommet';
 import _ from "lodash";
 
@@ -41,7 +41,7 @@ const IndexPage = ({ data }) => {
             property: 'Description',
             header: <Text>Description</Text>,
             render: ({ node }) => (
-              <Box direction="column">
+              <Box direction="column" id={node.id}>
                 <Box>{node.ICD_10_CM_Code}</Box>
                 <Heading level={4}>{node.Description}</Heading>
               </Box>
@@ -79,7 +79,6 @@ const IndexPage = ({ data }) => {
         ]}
         data={filtered}
       />
-      <Link to="/page-2/">Go to page 2</Link>
     </Layout>
   )
 }
