@@ -1,8 +1,8 @@
 module.exports = {
   siteMetadata: {
     title: `Not Official Diagnosis Search`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    description: `A simple prototype`,
+    author: `@ramseytisher`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -29,8 +29,8 @@ module.exports = {
         name: `not-dx-search`,
         short_name: `notDxSearch`,
         start_url: `/`,
-        background_color: `#663399`,
-        theme_color: `#663399`,
+        background_color: `#ff9f23`,
+        theme_color: `#ff9f23`,
         display: `minimal-ui`,
         icon: `src/images/search-icon.png`, // This path is relative to the root of the site.
       },

@@ -4,3 +4,6 @@ This tool is a prototype for what could be done to provide a diagnosis lookup to
 ## Source information
 NTA Comorbidity Score: https://www.cms.gov/Medicare/Medicare-Fee-for-Service-Payment/SNFPPS/Downloads/PDPM_Fact_Sheet_NTAComorbidityScoring_v2_508.pdf
 PDPM ICD-10 Mappings: https://www.cms.gov/Medicare/Medicare-Fee-for-Service-Payment/SNFPPS/PDPM.html (very bottom link)
+
+# What Other Vendors Are Doing
+http://www.matrixcare.com/pdpm/
