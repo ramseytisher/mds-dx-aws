@@ -12,7 +12,6 @@ const Layout = ({ children }) => (
         site {
           siteMetadata {
             title
-            description
           }
         }
       }
@@ -21,8 +20,7 @@ const Layout = ({ children }) => (
       <Grommet>
         <Box>
           <Box pad="small" background="dark-1">
-            <Heading>{data.site.siteMetadata.title}</Heading>
-            <Heading level={3}>{data.site.siteMetadata.description}</Heading>
+            <Heading margin="small" level={3}>{data.site.siteMetadata.title}</Heading>
           </Box>
         </Box>
         <Box pad="medium">
