@@ -1,36 +1,85 @@
 import React, { useState } from "react"
 import { graphql } from "gatsby"
-import { Box, Form, FormField, Button, Heading, DataTable, Text, ResponsiveContext } from 'grommet';
+import { Box, Form, FormField, Button, Heading, DataTable, Text, CheckBox, ResponsiveContext } from 'grommet';
 import _ from "lodash";
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
 const IndexPage = ({ data }) => {
-  const [filtered, setFiltered] = useState(data.allPdpmMapCsv.edges)
+  const [filtered, setFiltered] = useState(data.allPdpmMapCsv.edges);
+  const [showCodes, setShowCodes] = useState(false);
+  const [searchOr, setSearchOr] = useState(false);
 
   const handleSearch = (search) => {
-    const filteredResults = _.filter(data.allPdpmMapCsv.edges, ({ node }) => {
-      const str = node.Description.toString().toUpperCase() +
-        node.ICD_10_CM_Code.toString().toUpperCase() +
-        node.Default_Clinical_Category.toString().toUpperCase() +
-        node.NTA_Comorbidity.toString().toUpperCase() +
-        node.SLP_Comorbidity.toString().toUpperCase();
-      return str.includes(search.toUpperCase());
-    })
-    setFiltered(filteredResults);
+    const searchItems = search.split(",");
+
+    let filteredResults = [];
+
+    // if , = OR
+    if (searchOr) {
+      for (var i = 0; i < searchItems.length; i++) {
+        const find = searchItems[i].toString();
+        let found = _.filter(data.allPdpmMapCsv.edges, ({ node }) => {
+          const str = node.Description.toString().toUpperCase() +
+            node.ICD_10_CM_Code.toString().toUpperCase() +
+            node.Default_Clinical_Category.toString().toUpperCase() +
+            node.NTA_Comorbidity.toString().toUpperCase() +
+            node.SLP_Comorbidity.toString().toUpperCase();
+          return str.includes(find.trim().toUpperCase())
+        })
+        filteredResults.push(found);
+  
+        if (i === searchItems.length - 1) {
+          setFiltered(_.flatten(filteredResults));
+        }
+      }
+    } else {
+      for (var i = 0; i < searchItems.length; i++) {
+        const find = searchItems[i].toString();
+        let toFilter = data.allPdpmMapCsv.edges;
+        if (i !== 0) {
+          toFilter = _.flatten(filteredResults);
+        }
+        let found = _.filter(toFilter, ({ node }) => {
+          const str = node.Description.toString().toUpperCase() +
+            node.ICD_10_CM_Code.toString().toUpperCase() +
+            node.Default_Clinical_Category.toString().toUpperCase() +
+            node.NTA_Comorbidity.toString().toUpperCase() +
+            node.SLP_Comorbidity.toString().toUpperCase();
+          return str.includes(find.trim().toUpperCase())
+        })
+        filteredResults = found;
+  
+        if (i === searchItems.length - 1) {
+          setFiltered(_.flatten(filteredResults));
+        }
+      }
+    }
   }
 
   return (
     <Layout>
       <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
       <Form onSubmit={({ value }) => handleSearch(value.search)}>
-        <FormField name="search" label="Search" />
+        <FormField name="search" label="Search" help="Use a , to submit multiple items"/>
+        <Box direction="row" margin="small" gap="small">
+          <Button label={`Search By: ${searchOr ? "OR" : "AND"}`} onClick={()=>setSearchOr(!searchOr)}/>
+          <Button label={showCodes ? "Show Details": "Show Code Details"} onClick={() => setShowCodes(!showCodes)} />
+        </Box>
         <Button type="submit" primary label="Submit" />
       </Form>
       <Box>
-        <Heading level={4}>{`Found ${filtered.length} out of ${data.allPdpmMapCsv.edges.length} items.`}</Heading>
+        
       </Box>
+      <Box>
+        <Heading level={4}>{`Found ${filtered.length} out of ${data.allPdpmMapCsv.edges.length}`}</Heading>
+      </Box>
+      {showCodes ? (
+        <Box pad="small">
+          <Text>{filtered.map(({ node }) => `${node.ICD_10_CM_Code}, `)}</Text>
+        </Box>
+      ) : (
       <ResponsiveContext.Consumer>{size => {
         if (size === 'small') {
           return (
@@ -115,6 +164,7 @@ const IndexPage = ({ data }) => {
           />
         )
       }}</ResponsiveContext.Consumer>
+      )}
     </Layout>
   )
 }
