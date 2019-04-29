@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `Not Official Diagnosis Search`,
+    title: `PDPM Diagnosis Search Prototype`,
     description: `A simple prototype`,
     author: `@ramseytisher`,
   },
