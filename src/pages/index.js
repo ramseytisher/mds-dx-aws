@@ -72,7 +72,7 @@ const IndexPage = ({ data }) => {
       <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
       <Box elevation="small" pad="small" margin={{ bottom: 'medium' }}>
         <Form onSubmit={({ value }) => handleSearch(value.search)}>
-          <Box direction="row" gap="small" >
+          <Box direction="row" gap="small" justify="center" >
             <FormField name="search" help="Use , to search multiple items" style={{ 'width': '90vw', 'fontSize': '1.5rem' }} />
             <DropButton
               icon={<Configure />}
