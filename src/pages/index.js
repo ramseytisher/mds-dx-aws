@@ -10,14 +10,10 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 
 const IndexPage = ({ data }) => {
-  const [filtered, setFiltered] = useState(data.allPdpmMapCsv.edges);
+  const [filtered, setFiltered] = useState([]);
   const [showCodes, setShowCodes] = useState(false);
   const [searchOr, setSearchOr] = useState(false);
   const [searchStr, setSearchStr] = useState('');
-
-  const [searchValue, setSearchValue] = useState('');
-
-  const handleSearchType = (search) => { }
 
   const handleSearch = (search) => {
     const searchItems = search.split(",");

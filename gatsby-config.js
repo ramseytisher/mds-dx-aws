@@ -4,6 +4,7 @@ module.exports = {
     description: `A simple prototype`,
     author: `@ramseytisher`,
   },
+  pathPrefix: `/DxTool`,
   plugins: [
     `gatsby-plugin-react-helmet`,
     {
