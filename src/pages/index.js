@@ -7,7 +7,6 @@ import { Box, Form, FormField, Button, Heading, DataTable, Text, DropButton, Res
 import { Configure } from 'grommet-icons';
 
 import Layout from "../components/layout"
-import SEO from "../components/seo"
 
 const IndexPage = ({ data }) => {
   const [filtered, setFiltered] = useState([]);
@@ -38,10 +37,10 @@ const IndexPage = ({ data }) => {
         }
       }
     } else {
-      for (var i = 0; i < searchItems.length; i++) {
-        const find = searchItems[i].toString();
+      for (var j = 0; j < searchItems.length; j++) {
+        const find = searchItems[j].toString();
         let toFilter = data.allPdpmMapCsv.edges;
-        if (i !== 0) {
+        if (j !== 0) {
           toFilter = _.flatten(filteredResults);
         }
         let found = _.filter(toFilter, ({ node }) => {
@@ -54,7 +53,7 @@ const IndexPage = ({ data }) => {
         })
         filteredResults = found;
 
-        if (i === searchItems.length - 1) {
+        if (j === searchItems.length - 1) {
           setFiltered(_.flatten(filteredResults));
         }
       }
@@ -65,14 +64,13 @@ const IndexPage = ({ data }) => {
 
   return (
     <Layout>
-      <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
       <Box elevation="small" pad="small" margin={{ bottom: 'medium' }}>
         <Form onSubmit={({ value }) => handleSearch(value.search)}>
           <Box direction="row" gap="small" justify="center" >
             <FormField name="search" help="Use , to search multiple items" style={{ 'width': '90vw', 'fontSize': '1.5rem' }} />
             <DropButton
               icon={<Configure />}
-              dropAlign={{ top: 'center', right: 'right' }}
+              dropAlign={{ 'top': 'top', 'right': 'right' }}
               dropContent={
                 <Box margin="small" gap="small" pad="small">
                   <Text size="xlarge">Search Settings</Text>

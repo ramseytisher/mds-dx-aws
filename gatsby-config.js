@@ -6,7 +6,6 @@ module.exports = {
   },
   pathPrefix: `/DxTool`,
   plugins: [
-    `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -32,9 +31,15 @@ module.exports = {
         start_url: `/`,
         background_color: `#ff9f23`,
         theme_color: `#ff9f23`,
-        display: `minimal-ui`,
+        display: `fullscreen`,
         icon: `src/images/search-icon.png`, // This path is relative to the root of the site.
       },
+    },
+    {
+      resolve: `gatsby-plugin-styled-components`,
+      options: {
+        displayName: false
+      }
     },
     `gatsby-plugin-offline`,
   ],
