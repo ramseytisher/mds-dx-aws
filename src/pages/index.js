@@ -7,6 +7,7 @@ import { Box, Form, FormField, Button, Heading, DataTable, Text, DropButton, Res
 import { Configure } from 'grommet-icons';
 
 import Layout from "../components/layout"
+import Warning from "../components/warning"
 
 const IndexPage = ({ data }) => {
   const [filtered, setFiltered] = useState([]);
@@ -107,9 +108,10 @@ const IndexPage = ({ data }) => {
                         <Box margin="small" elevation="small" pad="small" fill key={node.id}>
                           <Box>{node.ICD_10_CM_Code}</Box>
                           <Heading level={4}>{node.Description}</Heading>
-                          <Box>
-                            {node.Default_Clinical_Category}
-                          </Box>
+                          <Warning
+                            check={node.Default_Clinical_Category === 'Return to Provider'}
+                            display={node.Default_Clinical_Category}
+                          />
                           <Box direction="column">
                             {node.SLP_Comorbidity !== "#N/A" && <Box>{`SLP: ${node.SLP_Comorbidity}`}</Box>}
                             {node.NTA_Comorbidity !== "#N/A" && <Box>{`NTA: ${node.NTA_Comorbidity}`}</Box>}
@@ -147,10 +149,12 @@ const IndexPage = ({ data }) => {
                   {
                     property: 'Default_Clinical_Category',
                     header: <Text>Default Clinical Category</Text>,
+                    sortable: true,
                     render: ({ node }) => (
-                      <Box>
-                        {node.Default_Clinical_Category}
-                      </Box>
+                      <Warning
+                        check={node.Default_Clinical_Category === 'Return to Provider'}
+                        display={node.Default_Clinical_Category}
+                      />
                     )
                   },
                   {
@@ -176,7 +180,7 @@ const IndexPage = ({ data }) => {
                 ]}
                 data={filtered}
               />
-          )
+            )
           }}</ResponsiveContext.Consumer>
         )}
     </Layout>
@@ -185,8 +189,8 @@ const IndexPage = ({ data }) => {
 
 export default IndexPage
 
-export const dataQuery = graphql`
-  query dataQuery{
+export const GetCodeList = graphql`
+  query GetCodeList{
     allPdpmMapCsv(sort: {fields: [Points], order: DESC}) {
       edges {
         node {
