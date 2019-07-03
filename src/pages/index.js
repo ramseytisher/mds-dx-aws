@@ -3,13 +3,15 @@ import { graphql } from "gatsby"
 
 import _ from "lodash";
 
-import { Box, Form, Button, FormField, DataTable, Text, ResponsiveContext, CheckBox, DropButton, Menu } from 'grommet';
-import { Edit, Up } from 'grommet-icons';
+import { Box, Form, Button, FormField, DataTable, Text, TextInput, ResponsiveContext, CheckBox, DropButton, Menu, RadioButtonGroup, RadioButton } from 'grommet';
+import { Search } from 'grommet-icons';
 
 import styled from 'styled-components';
 
 import Layout from "../components/layout";
 import CategoryText from "../components/category-text";
+import CodeList from "../components/code-list";
+import NoResults from "../components/no-results";
 
 const Toggle = styled(CheckBox)`
   background: blue;
@@ -18,7 +20,6 @@ const Toggle = styled(CheckBox)`
 const IndexPage = ({ data }) => {
   const [filtered, setFiltered] = useState([]);
   const [showCodes, setShowCodes] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [searchOr, setSearchOr] = useState(true);
   const [searchStr, setSearchStr] = useState('');
   const [orderBy, setOrderBy] = useState('Points');
@@ -74,8 +75,8 @@ const IndexPage = ({ data }) => {
     setSearchStr(search.replace(/,/g, `${searchOr ? " OR " : " AND "}`));
   }
 
-  const Settings = () => (
-    <Box align="center" justify="center" flex>
+  const Settings = ({ size }) => (
+    <Box direction={size !== "small" ? "row" : "column"} align="start" justify="center" gap="small" fill>
       <Box direction="row" gap="small" align="center">
         <Text weight="bold" size="small">Convert commas to:</Text>
         <Box direction="row" pad="small" gap="small" align="center">
@@ -120,134 +121,127 @@ const IndexPage = ({ data }) => {
     <Layout>
       <ResponsiveContext.Consumer>
         {size => (
-          <Box elevation="small" pad="small" gap="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
-            <Box width={size !== "small" ? "55vw" : "fill"}>
-              <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
-                <Box gap="small">
-                  <FormField name="search" help="Use , to search multiple items" style={{ 'fontSize': '1.5rem' }} required />
-                  <Box direction="row" gap="small" justify="center">
-                    <Text size="small">Convert commas to {searchOr ? 'OR' : 'AND'} | Sort by {orderBy} - {orderAsc ? 'Ascending' : 'Descending'}</Text>
-                    {size === 'small' && <Button onClick={() => setShowSettings(!showSettings)}>{showSettings ? <Up /> : <Edit />}</Button>}
+          <Box>
+            <Box fill elevation="small" pad="small" gap="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
+              <Box fill>
+                <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
+                  <Box gap="small">
+                    <Box>
+                      <Box direction="row" align="center">
+                        <Search />
+                        <FormField
+                          name="search"
+                          style={{ 'fontSize': '1.5rem', 'width': '80vw' }}
+                          required
+                          placeholder="Search"
+                        />
+                      </Box>
+                      <Text size="small">Use , to search multiple items</Text>
+                    </Box>
+                    <Settings size={size} />
+                    <Button type="submit" color="#007CBA" primary label="Search" />
                   </Box>
-                  {(size === 'small' && showSettings) && <Settings />}
-                  <Button type="submit" color="#007CBA" primary label="Search" />
-                </Box>
-              </Form>
-              <Box>
-                <Text size="small">
-                  {searchStr &&
-                    `Results displayed when searching for: "${searchStr}"`}
-                </Text>
+                </Form>
               </Box>
             </Box>
-            {size !== 'small' && <Settings />}
-          </Box>
-        )}
-      </ResponsiveContext.Consumer>
-
-      {showCodes ? (
-        <Box pad="small">
-          <Text>{filtered.map(({ node }) => `${node.ICD_10_CM_Code}, `)}</Text>
-        </Box>
-      ) : (
-          <ResponsiveContext.Consumer>{size => {
-            if (size === 'small') {
-              return (
-                <DataTable
-                  columns={[
-                    {
-                      property: 'Id',
-                      primary: true,
-                      header: <Text>Results</Text>,
-                      render: ({ node }) => (
-                        <Box margin="small" elevation="small" pad="small" fill key={node.id}>
-                          <Text size="large" weight="bold">{node.ICD_10_CM_Code}</Text>
-                          <Text>{node.Description}</Text>
-                          <CategoryText text={node.Default_Clinical_Category} />
-                          <Box direction="column">
-                            {node.SLP_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`SLP: ${node.SLP_Comorbidity}`}</Text>}
-                            {node.NTA_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`NTA: ${node.NTA_Comorbidity}`}</Text>}
-                          </Box>
-                          {node.Points !== "#N/A" && <Text>{node.Points} Points</Text>}
-                        </Box>
-                      )
-                    }
-                  ]}
-                  data={filtered}
-                />
-              )
-            }
-
-            return (
+            {searchStr &&<Text size="small">{`Results displayed when searching for: "${searchStr}"`}</Text>}
+            {showCodes && <CodeList codes={filtered} />}
+            {size === 'small' ? (
               <DataTable
                 columns={[
                   {
                     property: 'Id',
                     primary: true,
-                    header: <Text>Code</Text>,
-                    render: ({ node }) => <Text size="large">{node.ICD_10_CM_Code}</Text>
-                  },
-                  {
-                    property: 'Description',
-                    header: <Text>Description</Text>,
-                    render: ({ node }) => <Text>{node.Description}</Text>
-                  },
-                  {
-                    property: 'Default_Clinical_Category',
-                    header: <Text>Default Clinical Category</Text>,
-                    sortable: true,
-                    render: ({ node }) => <CategoryText text={node.Default_Clinical_Category} />
-                  },
-                  {
-                    property: 'Comorbidity',
-                    header: <Text>Comorbidity</Text>,
+                    header: <Text>Results</Text>,
                     render: ({ node }) => (
-                      <Box direction="column">
-                        {node.SLP_Comorbidity !== "#N/A" && (
-                          <DropButton
-                            label="SLP"
-                            color="#77BC1F"
-                            dropAlign={{ top: 'bottom', right: 'right' }}
-                            dropContent={
-                              <Box
-                                pad="xsmall"
-                                elevation='small'
-                                align='center'
-                              >
-                                {`SLP: ${node.SLP_Comorbidity}`}
-                              </Box>
-                            }
-                          />
-
-                        )}
-                        {node.NTA_Comorbidity !== "#N/A" && (
-                          <DropButton
-                            label="NTA"
-                            color="#77BC1F"
-                            dropAlign={{ top: 'bottom', right: 'right' }}
-                            dropContent={
-                              <Box
-                                pad="xsmall"
-                                elevation='small'
-                                align='center'
-                              >{`NTA: ${node.NTA_Comorbidity}`}</Box>
-                            }
-                          />
-                        )}
+                      <Box margin="small" elevation="small" pad="small" fill key={node.id}>
+                        <Text size="large" weight="bold">{node.ICD_10_CM_Code}</Text>
+                        <Text>{node.Description}</Text>
+                        <CategoryText text={node.Default_Clinical_Category} />
+                        <Box direction="column">
+                          {node.SLP_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`SLP: ${node.SLP_Comorbidity}`}</Text>}
+                          {node.NTA_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`NTA: ${node.NTA_Comorbidity}`}</Text>}
+                        </Box>
+                        {node.Points !== "#N/A" && <Text>{node.Points} Points</Text>}
                       </Box>
                     )
-                  },
-                  {
-                    property: 'Points',
-                    header: <Text>Points</Text>,
-                    render: ({ node }) => <Text>{node.Points}</Text>
                   }
                 ]}
                 data={filtered}
               />
-            )
-          }}</ResponsiveContext.Consumer>
+            ) : (
+                <DataTable
+                  columns={[
+                    {
+                      property: 'Id',
+                      primary: true,
+                      header: <Text>Code</Text>,
+                      render: ({ node }) => <Text size="large">{node.ICD_10_CM_Code}</Text>
+                    },
+                    {
+                      property: 'Description',
+                      header: <Text>Description</Text>,
+                      render: ({ node }) => <Text>{node.Description}</Text>
+                    },
+                    {
+                      property: 'Default_Clinical_Category',
+                      header: <Text>Default Clinical Category</Text>,
+                      sortable: true,
+                      render: ({ node }) => <CategoryText text={node.Default_Clinical_Category} />
+                    },
+                    {
+                      property: 'Comorbidity',
+                      header: <Text>Comorbidity</Text>,
+                      render: ({ node }) => (
+                        <Box direction="column">
+                          {node.SLP_Comorbidity !== "#N/A" && (
+                            <DropButton
+                              label="SLP"
+                              color="#77BC1F"
+                              dropAlign={{ top: 'bottom', right: 'right' }}
+                              dropContent={
+                                <Box
+                                  pad="xsmall"
+                                  elevation='small'
+                                  align='center'
+                                >
+                                  {`SLP: ${node.SLP_Comorbidity}`}
+                                </Box>
+                              }
+                            />
+
+                          )}
+                          {node.NTA_Comorbidity !== "#N/A" && (
+                            <DropButton
+                              label="NTA"
+                              color="#77BC1F"
+                              dropAlign={{ top: 'bottom', right: 'right' }}
+                              dropContent={
+                                <Box
+                                  pad="xsmall"
+                                  elevation='small'
+                                  align='center'
+                                >{`NTA: ${node.NTA_Comorbidity}`}</Box>
+                              }
+                            />
+                          )}
+                        </Box>
+                      )
+                    },
+                    {
+                      property: 'Points',
+                      header: <Text>Points</Text>,
+                      render: ({ node }) => <Text>{node.Points}</Text>
+                    }
+                  ]}
+                  data={filtered}
+                />
+              )}
+            {_.isEmpty(filtered) && <NoResults />}
+
+          </Box>
         )}
+      </ResponsiveContext.Consumer>
     </Layout>
   )
 }
