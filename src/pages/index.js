@@ -75,9 +75,9 @@ const IndexPage = ({ data }) => {
   }
 
   const Settings = () => (
-    <Box align="center" width="large" justify="center">
+    <Box align="center" justify="center">
       <Box direction="row" gap="small" align="center">
-        <Text weight="bold">Convert commas to:</Text>
+        <Text weight="bold" size="small">Convert commas to:</Text>
         <Box direction="row" pad="small" gap="small" align="center">
           <Text weight={!searchOr && "bold"}>AND</Text>
           <Toggle checked={searchOr} toggle onChange={() => setSearchOr(!searchOr)} />
@@ -85,7 +85,7 @@ const IndexPage = ({ data }) => {
         </Box>
       </Box>
       <Box direction="row" gap="small" align="center">
-        <Text weight="bold">Sort By:</Text>
+        <Text weight="bold" size="small">Sort By:</Text>
         <Box border={{ color: 'light-4' }}>
           <Menu
             label={_.startCase(orderBy)}
@@ -100,7 +100,7 @@ const IndexPage = ({ data }) => {
         </Box>
       </Box>
       <Box direction="row" gap="small" align="center">
-        <Text weight="bold">Sort Direction:</Text>
+        <Text weight="bold" size="small">Sort Direction:</Text>
         <Box direction="row" pad="small" gap="small" align="center">
           <Text weight={!orderAsc && "bold"}>DESC</Text>
           <Toggle checked={orderAsc} toggle onChange={() => setOrderAsc(!orderAsc)} />
@@ -120,8 +120,8 @@ const IndexPage = ({ data }) => {
     <Layout>
       <ResponsiveContext.Consumer>
         {size => (
-          <Box elevation="small" pad="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
-            <Box>
+          <Box elevation="small" pad="small" gap="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
+            <Box width={size !== "small" && "50vw"}>
               <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
                 <Box gap="small">
                   <FormField name="search" help="Use , to search multiple items" style={{ 'width': '90vw', 'fontSize': '1.5rem' }} required />
