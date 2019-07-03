@@ -75,7 +75,7 @@ const IndexPage = ({ data }) => {
   }
 
   const Settings = () => (
-    <Box align="center" justify="center">
+    <Box align="center" justify="center" width="40vw">
       <Box direction="row" gap="small" align="center">
         <Text weight="bold" size="small">Convert commas to:</Text>
         <Box direction="row" pad="small" gap="small" align="center">
@@ -121,10 +121,10 @@ const IndexPage = ({ data }) => {
       <ResponsiveContext.Consumer>
         {size => (
           <Box elevation="small" pad="small" gap="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
-            <Box width={size !== "small" && "50vw"}>
+            <Box fill={size !== "small"}>
               <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
                 <Box gap="small">
-                  <FormField name="search" help="Use , to search multiple items" style={{ 'width': '90vw', 'fontSize': '1.5rem' }} required />
+                  <FormField name="search" help="Use , to search multiple items" style={{ 'fontSize': '1.5rem' }} required />
                   <Box direction="row" gap="small" justify="center">
                     <Text size="small">Convert commas to {searchOr ? 'OR' : 'AND'} | Sort by {orderBy} - {orderAsc ? 'Ascending' : 'Descending'}</Text>
                     {size === 'small' && <Button onClick={() => setShowSettings(!showSettings)}>{showSettings ? <Up /> : <Edit />}</Button>}
