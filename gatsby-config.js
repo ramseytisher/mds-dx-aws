@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `PDPM Diagnosis Search Prototype`,
+    title: `PDPM Diagnosis Search`,
     description: `A simple prototype`,
     author: `@ramseytisher`,
   },
@@ -35,12 +35,7 @@ module.exports = {
         icon: `src/images/search-icon.png`, // This path is relative to the root of the site.
       },
     },
-    {
-      resolve: `gatsby-plugin-styled-components`,
-      options: {
-        displayName: false
-      }
-    },
     `gatsby-plugin-offline`,
+    `gatsby-plugin-antd`
   ],
 }

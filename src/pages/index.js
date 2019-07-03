@@ -3,17 +3,26 @@ import { graphql } from "gatsby"
 
 import _ from "lodash";
 
-import { Box, Form, FormField, Button, Heading, DataTable, Text, DropButton, ResponsiveContext } from 'grommet';
-import { Configure } from 'grommet-icons';
+import { Box, Form, Button, FormField, DataTable, Text, ResponsiveContext, CheckBox, DropButton, Menu } from 'grommet';
+import { Edit, Up } from 'grommet-icons';
 
-import Layout from "../components/layout"
-import Warning from "../components/warning"
+import styled from 'styled-components';
+
+import Layout from "../components/layout";
+import CategoryText from "../components/category-text";
+
+const Toggle = styled(CheckBox)`
+  background: blue;
+`;
 
 const IndexPage = ({ data }) => {
   const [filtered, setFiltered] = useState([]);
   const [showCodes, setShowCodes] = useState(false);
-  const [searchOr, setSearchOr] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [searchOr, setSearchOr] = useState(true);
   const [searchStr, setSearchStr] = useState('');
+  const [orderBy, setOrderBy] = useState('Points');
+  const [orderAsc, setOrderAsc] = useState(false);
 
   const handleSearch = (search) => {
     const searchItems = search.split(",");
@@ -34,17 +43,19 @@ const IndexPage = ({ data }) => {
         filteredResults.push(found);
 
         if (i === searchItems.length - 1) {
-          setFiltered(_.flatten(filteredResults));
+          let results = _.orderBy(_.flatten(filteredResults), ({ node }) => node[orderBy], [`${orderAsc ? 'asc' : 'desc'}`]);
+
+          setFiltered(_.flatten(results));
         }
       }
     } else {
       for (var j = 0; j < searchItems.length; j++) {
         const find = searchItems[j].toString();
-        let toFilter = data.allPdpmMapCsv.edges;
+        let tofilter = data.allPdpmMapCsv.edges;
         if (j !== 0) {
-          toFilter = _.flatten(filteredResults);
+          tofilter = _.flatten(filteredResults);
         }
-        let found = _.filter(toFilter, ({ node }) => {
+        let found = _.filter(tofilter, ({ node }) => {
           const str = node.Description.toString().toUpperCase() +
             node.ICD_10_CM_Code.toString().toUpperCase() +
             node.Default_Clinical_Category.toString().toUpperCase() +
@@ -63,32 +74,76 @@ const IndexPage = ({ data }) => {
     setSearchStr(search.replace(/,/g, `${searchOr ? " OR " : " AND "}`));
   }
 
-  return (
-    <Layout>
-      <Box elevation="small" pad="small" margin={{ bottom: 'medium' }}>
-        <Form onSubmit={({ value }) => handleSearch(value.search)}>
-          <Box direction="row" gap="small" justify="center" >
-            <FormField name="search" help="Use , to search multiple items" style={{ 'width': '90vw', 'fontSize': '1.5rem' }} />
-            <DropButton
-              icon={<Configure />}
-              dropAlign={{ 'top': 'top', 'right': 'right' }}
-              dropContent={
-                <Box margin="small" gap="small" pad="small">
-                  <Text size="xlarge">Search Settings</Text>
-                  <Button color="dark-3" label={`Search By: ${searchOr ? "OR" : "AND"}`} onClick={() => setSearchOr(!searchOr)} />
-                  <Button color="dark-3" label={showCodes ? "Show Details" : "Show Code List"} onClick={() => setShowCodes(!showCodes)} />
-                </Box>
-              }
-            />
-          </Box>
-        </Form>
-        <Box>
-          <Text level={4}>
-            {searchStr &&
-              `Found ${filtered.length} of ${data.allPdpmMapCsv.edges.length} when looking for: "${searchStr}"`}
-          </Text>
+  const Settings = () => (
+    <Box align="center" width="large" justify="center">
+      <Box direction="row" gap="small" align="center">
+        <Text weight="bold">Convert commas to:</Text>
+        <Box direction="row" pad="small" gap="small" align="center">
+          <Text weight={!searchOr && "bold"}>AND</Text>
+          <Toggle checked={searchOr} toggle onChange={() => setSearchOr(!searchOr)} />
+          <Text weight={searchOr && "bold"}>OR</Text>
         </Box>
       </Box>
+      <Box direction="row" gap="small" align="center">
+        <Text weight="bold">Sort By:</Text>
+        <Box border={{ color: 'light-4' }}>
+          <Menu
+            label={_.startCase(orderBy)}
+            items={[
+              { label: 'ICD 10 CM Code', onClick: () => setOrderBy('ICD_10_CM_Code') },
+              { label: 'Description', onClick: () => setOrderBy('Description') },
+              { label: 'SLP Comorbidity', onClick: () => setOrderBy('SLP_Comorbidity') },
+              { label: 'NTA Comorbidity', onClick: () => setOrderBy('NTA_Comorbidity') },
+              { label: 'Points', onClick: () => setOrderBy('Points') },
+            ]}
+          />
+        </Box>
+      </Box>
+      <Box direction="row" gap="small" align="center">
+        <Text weight="bold">Sort Direction:</Text>
+        <Box direction="row" pad="small" gap="small" align="center">
+          <Text weight={!orderAsc && "bold"}>DESC</Text>
+          <Toggle checked={orderAsc} toggle onChange={() => setOrderAsc(!orderAsc)} />
+          <Text weight={orderAsc && "bold"}>ASC</Text>
+        </Box>
+      </Box>
+      {/* <Text>Show:</Text>
+              <Box direction="row" pad="small" gap="small" align="center">
+                <Text weight={!showCodes && "bold"}>Details</Text>
+                <CheckBox checked={showCodes} toggle onChange={() => setShowCodes(!showCodes)} />
+                <Text weight={showCodes && "bold"}>List Codes</Text>
+              </Box> */}
+    </Box>
+  )
+
+  return (
+    <Layout>
+      <ResponsiveContext.Consumer>
+        {size => (
+          <Box elevation="small" pad="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
+            <Box>
+              <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
+                <Box gap="small">
+                  <FormField name="search" help="Use , to search multiple items" style={{ 'width': '90vw', 'fontSize': '1.5rem' }} required />
+                  <Box direction="row" gap="small" justify="center">
+                    <Text size="small">Convert commas to {searchOr ? 'OR' : 'AND'} | Sort by {orderBy} - {orderAsc ? 'Ascending' : 'Descending'}</Text>
+                    {size === 'small' && <Button onClick={() => setShowSettings(!showSettings)}>{showSettings ? <Up /> : <Edit />}</Button>}
+                  </Box>
+                  {(size === 'small' && showSettings) && <Settings />}
+                  <Button type="submit" color="#007CBA" primary label="Search" />
+                </Box>
+              </Form>
+              <Box>
+                <Text size="small">
+                  {searchStr &&
+                    `Results displayed when searching for: "${searchStr}"`}
+                </Text>
+              </Box>
+            </Box>
+            {size !== 'small' && <Settings />}
+          </Box>
+        )}
+      </ResponsiveContext.Consumer>
 
       {showCodes ? (
         <Box pad="small">
@@ -106,20 +161,14 @@ const IndexPage = ({ data }) => {
                       header: <Text>Results</Text>,
                       render: ({ node }) => (
                         <Box margin="small" elevation="small" pad="small" fill key={node.id}>
-                          <Box>{node.ICD_10_CM_Code}</Box>
-                          <Heading level={4}>{node.Description}</Heading>
-                          <Warning
-                            check={node.Default_Clinical_Category === 'Return to Provider'}
-                            display={node.Default_Clinical_Category}
-                          />
+                          <Text size="large" weight="bold">{node.ICD_10_CM_Code}</Text>
+                          <Text>{node.Description}</Text>
+                          <CategoryText text={node.Default_Clinical_Category} />
                           <Box direction="column">
-                            {node.SLP_Comorbidity !== "#N/A" && <Box>{`SLP: ${node.SLP_Comorbidity}`}</Box>}
-                            {node.NTA_Comorbidity !== "#N/A" && <Box>{`NTA: ${node.NTA_Comorbidity}`}</Box>}
+                            {node.SLP_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`SLP: ${node.SLP_Comorbidity}`}</Text>}
+                            {node.NTA_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`NTA: ${node.NTA_Comorbidity}`}</Text>}
                           </Box>
-                          <Box direction="column">
-                            <Heading level={4}>{node.Points} Points</Heading>
-                            <Box>{`Source: ${node.MDS_Field}`}</Box>
-                          </Box>
+                          {node.Points !== "#N/A" && <Text>{node.Points} Points</Text>}
                         </Box>
                       )
                     }
@@ -134,48 +183,64 @@ const IndexPage = ({ data }) => {
                 columns={[
                   {
                     property: 'Id',
-                    primary: true
+                    primary: true,
+                    header: <Text>Code</Text>,
+                    render: ({ node }) => <Text size="large">{node.ICD_10_CM_Code}</Text>
                   },
                   {
                     property: 'Description',
                     header: <Text>Description</Text>,
-                    render: ({ node }) => (
-                      <Box direction="column" key={node.id}>
-                        <Box>{node.ICD_10_CM_Code}</Box>
-                        <Heading level={4}>{node.Description}</Heading>
-                      </Box>
-                    )
+                    render: ({ node }) => <Text>{node.Description}</Text>
                   },
                   {
                     property: 'Default_Clinical_Category',
                     header: <Text>Default Clinical Category</Text>,
                     sortable: true,
-                    render: ({ node }) => (
-                      <Warning
-                        check={node.Default_Clinical_Category === 'Return to Provider'}
-                        display={node.Default_Clinical_Category}
-                      />
-                    )
+                    render: ({ node }) => <CategoryText text={node.Default_Clinical_Category} />
                   },
                   {
                     property: 'Comorbidity',
                     header: <Text>Comorbidity</Text>,
                     render: ({ node }) => (
                       <Box direction="column">
-                        {node.SLP_Comorbidity !== "#N/A" && <Box>{`SLP: ${node.SLP_Comorbidity}`}</Box>}
-                        {node.NTA_Comorbidity !== "#N/A" && <Box>{`NTA: ${node.NTA_Comorbidity}`}</Box>}
+                        {node.SLP_Comorbidity !== "#N/A" && (
+                          <DropButton
+                            label="SLP"
+                            color="#77BC1F"
+                            dropAlign={{ top: 'bottom', right: 'right' }}
+                            dropContent={
+                              <Box
+                                pad="xsmall"
+                                elevation='small'
+                                align='center'
+                              >
+                                {`SLP: ${node.SLP_Comorbidity}`}
+                              </Box>
+                            }
+                          />
+
+                        )}
+                        {node.NTA_Comorbidity !== "#N/A" && (
+                          <DropButton
+                            label="NTA"
+                            color="#77BC1F"
+                            dropAlign={{ top: 'bottom', right: 'right' }}
+                            dropContent={
+                              <Box
+                                pad="xsmall"
+                                elevation='small'
+                                align='center'
+                              >{`NTA: ${node.NTA_Comorbidity}`}</Box>
+                            }
+                          />
+                        )}
                       </Box>
                     )
                   },
                   {
                     property: 'Points',
                     header: <Text>Points</Text>,
-                    render: ({ node }) => (
-                      <Box direction="column">
-                        <Heading level={4}>{node.Points}</Heading>
-                        <Box>{`Source: ${node.MDS_Field}`}</Box>
-                      </Box>
-                    )
+                    render: ({ node }) => <Text>{node.Points}</Text>
                   }
                 ]}
                 data={filtered}
