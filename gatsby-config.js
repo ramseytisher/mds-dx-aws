@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: `PDPM Diagnosis Search`,
-    description: `A simple prototype`,
+    description: `PDPM Diagnosis Search`,
     author: `@ramseytisher`,
   },
   pathPrefix: `/DxTool`,
@@ -29,8 +29,8 @@ module.exports = {
         name: `pdpm-dx-search`,
         short_name: `pdpmDxSearch`,
         start_url: `/`,
-        background_color: `#ff9f23`,
-        theme_color: `#ff9f23`,
+        background_color: `#007CBA`,
+        theme_color: `#007CBA`,
         display: `standalone`,
         icon: `src/images/search-icon.png`, // This path is relative to the root of the site.
       },
