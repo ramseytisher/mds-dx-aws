@@ -3,14 +3,13 @@ import { graphql } from "gatsby"
 
 import _ from "lodash";
 
-import { Box, Form, Button, FormField, DataTable, Text, TextInput, ResponsiveContext, CheckBox, DropButton, Menu, RadioButtonGroup, RadioButton } from 'grommet';
-import { Search } from 'grommet-icons';
+import { Box, Form, Button, FormField, DataTable, Text, ResponsiveContext, CheckBox, DropButton, Menu } from 'grommet';
+import { Search, CircleInformation } from 'grommet-icons';
 
 import styled from 'styled-components';
 
-import Layout from "../components/layout";
-import CategoryText from "../components/category-text";
-import CodeList from "../components/code-list";
+import Layout from "../components/layout/layout";
+// import CodeList from "../components/code-list";
 import NoResults from "../components/no-results";
 
 const Toggle = styled(CheckBox)`
@@ -19,7 +18,7 @@ const Toggle = styled(CheckBox)`
 
 const IndexPage = ({ data }) => {
   const [filtered, setFiltered] = useState([]);
-  const [showCodes, setShowCodes] = useState(false);
+  // const [showCodes, setShowCodes] = useState(false);
   const [searchOr, setSearchOr] = useState(true);
   const [searchStr, setSearchStr] = useState('');
   const [orderBy, setOrderBy] = useState('Points');
@@ -71,7 +70,6 @@ const IndexPage = ({ data }) => {
         }
       }
     }
-
     setSearchStr(search.replace(/,/g, `${searchOr ? " OR " : " AND "}`));
   }
 
@@ -91,7 +89,7 @@ const IndexPage = ({ data }) => {
           <Menu
             label={_.startCase(orderBy)}
             items={[
-              { label: 'ICD 10 CM Code', onClick: () => setOrderBy('ICD_10_CM_Code') },
+              { label: 'ICD-10 CM Code', onClick: () => setOrderBy('ICD_10_CM_Code') },
               { label: 'Description', onClick: () => setOrderBy('Description') },
               { label: 'SLP Comorbidity', onClick: () => setOrderBy('SLP_Comorbidity') },
               { label: 'NTA Comorbidity', onClick: () => setOrderBy('NTA_Comorbidity') },
@@ -109,11 +107,11 @@ const IndexPage = ({ data }) => {
         </Box>
       </Box>
       {/* <Text>Show:</Text>
-              <Box direction="row" pad="small" gap="small" align="center">
-                <Text weight={!showCodes && "bold"}>Details</Text>
-                <CheckBox checked={showCodes} toggle onChange={() => setShowCodes(!showCodes)} />
-                <Text weight={showCodes && "bold"}>List Codes</Text>
-              </Box> */}
+          <Box direction="row" pad="small" gap="small" align="center">
+            <Text weight={!showCodes && "bold"}>Details</Text>
+            <CheckBox checked={showCodes} toggle onChange={() => setShowCodes(!showCodes)} />
+            <Text weight={showCodes && "bold"}>List Codes</Text>
+          </Box> */}
     </Box>
   )
 
@@ -122,123 +120,140 @@ const IndexPage = ({ data }) => {
       <ResponsiveContext.Consumer>
         {size => (
           <Box>
-            <Box fill elevation="small" pad="small" gap="small" margin={{ bottom: 'medium' }} direction={size === "small" ? "column" : "row"}>
-              <Box fill>
-                <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
-                  <Box gap="small">
-                    <Box>
-                      <Box direction="row" align="center">
-                        <Search />
-                        <FormField
-                          name="search"
-                          style={{ 'fontSize': '1.5rem', 'width': '80vw' }}
-                          required
-                          placeholder="Search"
-                        />
-                      </Box>
-                      <Text size="small">Use , to search multiple items</Text>
+            <Box elevation="small" pad="small" gap="small" direction={size === "small" ? "column" : "row"}>
+              <Form onSubmit={({ value }) => handleSearch(value.search)} messages={{ required: "search value(s) required" }}>
+                <Box gap="small">
+                  <Box >
+                    <Box direction="row" align="center" >
+                      <Search />
+                      <FormField
+                        name="search"
+                        style={{ 'fontSize': '1.5rem', 'width': '80vw' }}
+                        required
+                        placeholder="Search"
+                      />
                     </Box>
-                    <Settings size={size} />
-                    <Button type="submit" color="#007CBA" primary label="Search" />
+                    <Text size="small">Use , to search multiple items</Text>
                   </Box>
-                </Form>
-              </Box>
+                  <Settings size={size} />
+                  <Button type="submit" color="#007CBA" primary label="Search" />
+                </Box>
+              </Form>
             </Box>
-            {searchStr &&<Text size="small">{`Results displayed when searching for: "${searchStr}"`}</Text>}
-            {showCodes && <CodeList codes={filtered} />}
-            {size === 'small' ? (
-              <DataTable
-                columns={[
-                  {
-                    property: 'Id',
-                    primary: true,
-                    header: <Text>Results</Text>,
-                    render: ({ node }) => (
-                      <Box margin="small" elevation="small" pad="small" fill key={node.id}>
-                        <Text size="large" weight="bold">{node.ICD_10_CM_Code}</Text>
-                        <Text>{node.Description}</Text>
-                        <CategoryText text={node.Default_Clinical_Category} />
-                        <Box direction="column">
-                          {node.SLP_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`SLP: ${node.SLP_Comorbidity}`}</Text>}
-                          {node.NTA_Comorbidity !== "#N/A" && <Text weight="bold" color="#77BC1F">{`NTA: ${node.NTA_Comorbidity}`}</Text>}
-                        </Box>
-                        {node.Points !== "#N/A" && <Text>{node.Points} Points</Text>}
-                      </Box>
-                    )
-                  }
-                ]}
-                data={filtered}
-              />
-            ) : (
-                <DataTable
-                  columns={[
-                    {
-                      property: 'Id',
-                      primary: true,
-                      header: <Text>Code</Text>,
-                      render: ({ node }) => <Text size="large">{node.ICD_10_CM_Code}</Text>
-                    },
-                    {
-                      property: 'Description',
-                      header: <Text>Description</Text>,
-                      render: ({ node }) => <Text>{node.Description}</Text>
-                    },
-                    {
-                      property: 'Default_Clinical_Category',
-                      header: <Text>Default Clinical Category</Text>,
-                      sortable: true,
-                      render: ({ node }) => <CategoryText text={node.Default_Clinical_Category} />
-                    },
-                    {
-                      property: 'Comorbidity',
-                      header: <Text>Comorbidity</Text>,
-                      render: ({ node }) => (
-                        <Box direction="column">
-                          {node.SLP_Comorbidity !== "#N/A" && (
-                            <DropButton
-                              label="SLP"
-                              color="#77BC1F"
-                              dropAlign={{ top: 'bottom', right: 'right' }}
-                              dropContent={
-                                <Box
-                                  pad="xsmall"
-                                  elevation='small'
-                                  align='center'
-                                >
-                                  {`SLP: ${node.SLP_Comorbidity}`}
-                                </Box>
-                              }
-                            />
-
-                          )}
-                          {node.NTA_Comorbidity !== "#N/A" && (
-                            <DropButton
-                              label="NTA"
-                              color="#77BC1F"
-                              dropAlign={{ top: 'bottom', right: 'right' }}
-                              dropContent={
-                                <Box
-                                  pad="xsmall"
-                                  elevation='small'
-                                  align='center'
-                                >{`NTA: ${node.NTA_Comorbidity}`}</Box>
-                              }
-                            />
-                          )}
-                        </Box>
-                      )
-                    },
-                    {
-                      property: 'Points',
-                      header: <Text>Points</Text>,
-                      render: ({ node }) => <Text>{node.Points}</Text>
-                    }
-                  ]}
-                  data={filtered}
-                />
-              )}
-            {_.isEmpty(filtered) && <NoResults />}
-
+            <Box>
+              <Box>
+                {searchStr && <Text size="small">{`Results displayed when searching for: "${searchStr}"`}</Text>}
+              </Box>
+              {/* {showCodes && <CodeList codes={filtered} />} */}
+              <Box>
+                {size === 'small' ? (
+                  <DataTable
+                    columns={[
+                      {
+                        property: 'Id',
+                        primary: true,
+                        header: <Text>Results</Text>,
+                        render: ({ node }) => (
+                          <Box margin="small" elevation="small" pad="small" fill key={node.id}>
+                            <Text size="large" weight="bold">{node.ICD_10_CM_Code}</Text>
+                            <Text>{node.Description}</Text>
+                            {node.Default_Clinical_Category === 'Return to Provider' ?
+                              <Text color="#CC0000" weight="bold">Return to Provider</Text> :
+                              <Text>{node.Default_Clinical_Category}</Text>
+                            }
+                            <Box direction="column">
+                              {!_.isEmpty(node.SLP_Comorbidity) && <Text weight="bold" color="#77BC1F">{`SLP: ${node.SLP_Comorbidity}`}</Text>}
+                              {!_.isEmpty(node.NTA_Comorbidity) && <Text weight="bold" color="#77BC1F">{`NTA: ${node.NTA_Comorbidity}`}</Text>}
+                            </Box>
+                            {node.Points !== "#N/A" && <Text>{node.Points} Points</Text>}
+                          </Box>
+                        )
+                      }
+                    ]}
+                    data={filtered}
+                  />
+                ) : (
+                    <DataTable
+                      columns={[
+                        {
+                          property: 'Id',
+                          primary: true,
+                          header: <Text>Code</Text>,
+                          render: ({ node }) => <Text size="large">{node.ICD_10_CM_Code}</Text>
+                        },
+                        {
+                          property: 'Description',
+                          header: <Text>Description</Text>,
+                          render: ({ node }) => <Text>{node.Description}</Text>
+                        },
+                        {
+                          property: 'Default_Clinical_Category',
+                          header: <Text>Default Clinical Category</Text>,
+                          sortable: true,
+                          render: ({ node }) => {
+                            if (node.Default_Clinical_Category === 'Return to Provider') {
+                              return <Text color="#CC0000" weight="bold">Return to Provider</Text>
+                            } else {
+                              return <Text>{node.Default_Clinical_Category}</Text>
+                            }
+                          }
+                        },
+                        {
+                          property: 'Comorbidity',
+                          header: <Text>Comorbidity</Text>,
+                          render: ({ node }) => (
+                            <Box direction="column">
+                              {!_.isEmpty(node.SLP_Comorbidity) && (
+                                <DropButton
+                                  label="SLP"
+                                  icon={<CircleInformation color="lightblue" />}
+                                  reverse
+                                  plain
+                                  dropAlign={{ top: 'bottom', right: 'right' }}
+                                  dropContent={
+                                    <Box
+                                      pad="xsmall"
+                                      elevation='small'
+                                      align='center'
+                                    >
+                                      <Text>{node.SLP_Comorbidity}</Text>
+                                    </Box>
+                                  }
+                                />
+                              )}
+                              {!_.isEmpty(node.NTA_Comorbidity) && (
+                                <DropButton
+                                  label="NTA"
+                                  icon={<CircleInformation color="lightblue" />}
+                                  reverse
+                                  plain
+                                  dropAlign={{ top: 'bottom', right: 'right' }}
+                                  dropContent={
+                                    <Box
+                                      pad="xsmall"
+                                      elevation='small'
+                                      align='center'
+                                    >
+                                      <Text>{node.NTA_Comorbidity}</Text>
+                                    </Box>
+                                  }
+                                />
+                              )}
+                            </Box>
+                          )
+                        },
+                        {
+                          property: 'Points',
+                          header: <Text>Points</Text>,
+                          render: ({ node }) => <Text>{node.Points}</Text>
+                        }
+                      ]}
+                      data={filtered}
+                    />
+                  )}
+              </Box>
+              <Box>{_.isEmpty(filtered) && <NoResults />}</Box>
+            </Box>
           </Box>
         )}
       </ResponsiveContext.Consumer>
@@ -257,11 +272,9 @@ export const GetCodeList = graphql`
           ICD_10_CM_Code
           Description
           Default_Clinical_Category
-          Resident_Had_a_Major_Procedure_during_the_Prior_Inpatient_Stay_that_Impacts_the_SNF_Care_Plan_
           Points
           SLP_Comorbidity
           NTA_Comorbidity
-          MDS_Field
         }
       }
     }

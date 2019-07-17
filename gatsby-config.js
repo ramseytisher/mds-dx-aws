@@ -26,13 +26,19 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `not-dx-search`,
-        short_name: `notDxSearch`,
+        name: `pdpm-dx-search`,
+        short_name: `pdpmDxSearch`,
         start_url: `/`,
         background_color: `#ff9f23`,
         theme_color: `#ff9f23`,
         display: `standalone`,
         icon: `src/images/search-icon.png`, // This path is relative to the root of the site.
+      },
+    },
+    {
+      resolve: `gatsby-plugin-styled-components`,
+      options: {
+        displayName: false
       },
     },
     `gatsby-plugin-offline`,
