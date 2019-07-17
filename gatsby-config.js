@@ -2,7 +2,7 @@ module.exports = {
   siteMetadata: {
     title: `PDPM Diagnosis Search`,
     description: `PDPM Diagnosis Search`,
-    author: `@ramseytisher`,
+    author: `ramsey.tisher@cerner.com`,
   },
   pathPrefix: `/DxTool`,
   plugins: [
