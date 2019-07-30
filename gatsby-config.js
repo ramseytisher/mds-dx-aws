@@ -4,7 +4,7 @@ module.exports = {
     description: `PDPM Diagnosis Search`,
     author: `ramsey.tisher@cerner.com`,
   },
-  pathPrefix: `/DxTool`,
+  pathPrefix: `/DiagnosisSearch`,
   plugins: [
     {
       resolve: `gatsby-source-filesystem`,
@@ -23,6 +23,15 @@ module.exports = {
     `gatsby-transformer-csv`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
+    {
+      resolve: `gatsby-plugin-nprogress`,
+      options: {
+        // Setting a color is optional.
+        color: `tomato`,
+        // Disable the loading spinner.
+        showSpinner: true,
+      },
+    },
     {
       resolve: `gatsby-plugin-manifest`,
       options: {

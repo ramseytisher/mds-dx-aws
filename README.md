@@ -57,7 +57,7 @@ gatsby build
 Since this application is not hosted at the root ( / ) of the domain, it requires a slight modification in the build step to produce a final production build that supports this. See [here](https://www.gatsbyjs.org/docs/path-prefix/) for more information.
 
 ```sh
-gatsby build --prefix-paths
+npm run build-prefix
 ```
 
 Once this process completes, the static files produced in the ./public directory can be given to the Hosted Operations team to replace the existing ones.
