@@ -22,14 +22,31 @@ module.exports = {
     },
     `gatsby-transformer-csv`,
     `gatsby-transformer-sharp`,
+    `gatsby-plugin-lodash`,
     `gatsby-plugin-sharp`,
     {
-      resolve: `gatsby-plugin-nprogress`,
+      resolve: `gatsby-plugin-styled-components`,
       options: {
-        // Setting a color is optional.
-        color: `tomato`,
-        // Disable the loading spinner.
-        showSpinner: true,
+        displayName: false
+      },
+    },
+    {
+      resolve: `gatsby-plugin-google-analytics`,
+      options: {
+        trackingId: "UA-144985329-1",
+        // Defines where to place the tracking script - `true` in the head and `false` in the body
+        head: false,
+        // Setting this parameter is optional
+        anonymize: true,
+        // Setting this parameter is also optional
+        respectDNT: true,
+        // Avoids sending pageview hits from custom paths
+        exclude: ["/preview/**", "/do-not-track/me/too/"],
+        // Delays sending pageview hits on route update (in milliseconds)
+        pageTransitionDelay: 0,
+        sampleRate: 5,
+        siteSpeedSampleRate: 10,
+        cookieDomain: "example.com",
       },
     },
     {
@@ -42,12 +59,6 @@ module.exports = {
         theme_color: `#007CBA`,
         display: `standalone`,
         icon: `src/images/search-icon.png`, // This path is relative to the root of the site.
-      },
-    },
-    {
-      resolve: `gatsby-plugin-styled-components`,
-      options: {
-        displayName: false
       },
     },
     `gatsby-plugin-offline`,

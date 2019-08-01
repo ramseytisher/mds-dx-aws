@@ -21,7 +21,7 @@ Ramsey Tisher - ramsey.tisher@cerner.com
 
 # Development/Deployment Guide
 
-The Gatsby command line tool (CLI) is the main entry point for getting up and running with a Gatsby application and for using functionality including like running a development server and building out your Gatsby application for deployment.
+The Gatsby command line tool (CLI) is the main entry point for getting up and running with a Gatsby application and for using functionality including running a development server and building out your Gatsby application for deployment.
 
 More info on the CLI [here](https://www.gatsbyjs.org/docs/gatsby-cli/).
 
@@ -32,11 +32,16 @@ npm install -g gatsby-cli
 Clone this Github repo to your local machine
 
 ```sh
-git clone ...
+git clone https://github.cerner.com/RT022748/pdpm-diagnosis-search
 ```
-## Development 
 
-Go to the root directory of the project and start the development server
+Install project dependencies
+
+```sh
+npm install
+```
+
+Ensure you're at the project root directory and start the development server, this servers the app on localhost:8000
 
 ```sh
 gatsby develop
@@ -44,13 +49,19 @@ gatsby develop
 
 ## Deployment
 
-This application is deployed as static files that are hosted at: ...
+This application is deployed as static files that are hosted at: https://powerchartltc.caretrackeronline.com/DiagnosisSearch
 
 ### Local Production Build 
-To locally test the production build process
+To locally test the production build process create a production build
 
 ```sh
 gatsby build
+```
+
+Then serve the files locally, this serves the files on localhost:9000
+
+```sh
+gatsby serve
 ```
 
 ### Final Production Build
